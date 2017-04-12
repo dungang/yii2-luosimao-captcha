@@ -37,6 +37,7 @@ class CaptchaWidget extends InputWidget
 
     public function run()
     {
+        CaptchaAsset::register($this->view);
         $options = [
             'data-site-key'=>$this->siteKey,
             'data-width'=>$this->width
