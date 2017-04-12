@@ -13,29 +13,40 @@ use yii\validators\Validator;
 
 class CaptchaValidator extends Validator
 {
+    public $messages = [
+        '-10'=>'API KEY 为空',
+        '-11'=>'response为空',
+        '-2x'=>'response错误',
+        '-40'=>'API_KEY使用错误',
+    ];
     public function validateAttribute($model, $attribute)
     {
         if (empty(\Yii::$app->params['luosimao']) ||
             empty(\Yii::$app->params['luosimao']['apiKey'])) {
-            return $this->addError($model,$attribute,\Yii::t('app','Lost luosimao captcha config'));
-        }
-        $apiKey = \Yii::$app->params['luosimao']['apiKey'];
-        if($response = \Yii::$app->request->post('luotest_response')) {
+             $this->addError($model,$attribute,\Yii::t('app','Lost luosimao captcha config'));
+        } else {
+            $apiKey = \Yii::$app->params['luosimao']['apiKey'];
+            if($response = \Yii::$app->request->post('luotest_response')) {
 
-            $rst =  $this->request('https://captcha.luosimao.com/api/site_verify',true,[
-                'api_key'=>$apiKey,
-                'response'=>$response
-            ]);
-
-            if ($rst) {
-                $rst = Json::decode($rst);
-                if ($rst['res'] != 'success') {
-                    return $this->addError($model,$attribute,$rst['msg']);
+                $rst =  $this->request('https://captcha.luosimao.com/api/site_verify',true,[
+                    'api_key'=>$apiKey,
+                    'response'=>$response
+                ]);
+                if ($rst) {
+                    $rst = Json::decode($rst);
+                    if ($rst['res'] == 'success') {
+                        return null;
+                    } else {
+                        $this->addError($model,$attribute,isset($this->message[$rst['error']])
+                            ?$this->message[$rst['error']]
+                            :$rst['msg']);
+                    }
                 }
             }
+
+            $this->addError($model,$attribute,\Yii::t('app','Server Error'));
         }
 
-        return $this->addError($model,$attribute,\Yii::t('app','Server Error'));
 
     }
 
@@ -44,38 +55,16 @@ class CaptchaValidator extends Validator
      * @param $url
      * @param $isPost
      * @param array $data
-     * @param array $options
-     * @param array $headers
      * @return mixed
      * @throws \Exception
      */
-    public function request($url,$isPost,$data=[],$options=[],$headers=[])
+    public function request($url,$isPost,$data=[])
     {
         $ch = curl_init();
         //set url
         curl_setopt($ch,CURLOPT_URL,$url);
-        curl_setopt($ch,CURLOPT_TIMEOUT,$this->timeout);
-        //定义options
-        if (is_array($options)) {
-            foreach ($options as $const => $option) {
-                if (defined($const)) {
-                    $const_val = constant($const);
-                    switch ($const_val) {
-                        case CURLOPT_HTTPHEADER:
-                        case CURLOPT_POST:
-                        case CURLOPT_POSTFIELDS:
-                        case CURLOPT_URL:
-                            continue;
-                        default:
-                            curl_setopt($ch,$const_val,$option);
-                    }
-                }
-            }
-        }
-        //定义头部信息
-        if (is_array($headers)) {
-            curl_setopt($ch,CURLOPT_HTTPHEADER,$headers);
-        }
+        curl_setopt($ch,CURLOPT_SSL_VERIFYPEER,false);
+        curl_setopt($ch,CURLOPT_RETURNTRANSFER,true);
 
         //定义post
         if ($isPost) {

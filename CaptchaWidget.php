@@ -23,7 +23,7 @@ class CaptchaWidget extends InputWidget
      * app site key
      * @var string
      */
-    public $siteKey = 'aab758dfe65d67a418589e950ea07b05';
+    public $siteKey;
 
     /**
      * @var integer 验证码的宽度
@@ -38,9 +38,17 @@ class CaptchaWidget extends InputWidget
     public function run()
     {
         CaptchaAsset::register($this->view);
+
+        if (empty($this->siteKey)) {
+            if (isset(\Yii::$app->params['luosimao']) &&
+                isset(\Yii::$app->params['luosimao']['siteKey'])) {
+                $this->siteKey = \Yii::$app->params['luosimao']['siteKey'];
+            }
+        }
         $options = [
             'data-site-key'=>$this->siteKey,
-            'data-width'=>$this->width
+            'data-width'=>$this->width,
+            'class'=>'l-captcha'
         ];
         if ($this->callback) {
             $options['data-callback'] = $this->callback;
@@ -52,9 +60,7 @@ class CaptchaWidget extends InputWidget
         } else {
             $input = Html::hiddenInput($this->name,'captcha',$this->options);
         }
-        $captcha = $input
-        . '<input type="hidden" id="lc-captcha-response" name="luotest_response" value="">'
-        . Html::tag('div','',$options);
+        $captcha = $input . Html::tag('div','',$options);
 
         if ($this->reset) {
             $captcha .= Html::a(\Yii::t('app','Rest Captcha'),'#',[
