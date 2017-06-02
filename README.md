@@ -11,7 +11,7 @@ Luosimao 创新开发的人机验证，免去了复杂的输入过程，具有�
 > 安装
 
 ```
- composer require dungang\yii2-luosimao-captcha
+ composer require dungang/yii2-luosimao-captcha
  
 ```
 
