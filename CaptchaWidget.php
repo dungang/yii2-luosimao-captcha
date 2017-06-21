@@ -33,8 +33,6 @@ class CaptchaWidget extends InputWidget
 
     public function run()
     {
-        //CaptchaAsset::register($this->view);
-
         $jsCode = "
             (function(){
                 var c = document.createElement('script');c.type = 'text/javascript';c.async = true;
