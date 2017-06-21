@@ -63,9 +63,10 @@ class CaptchaWidget extends InputWidget
         $captcha = $input . Html::tag('div','',$options);
 
         if ($this->reset) {
-            $captcha .= Html::a(\Yii::t('app','Rest Captcha'),'#',[
-                'onclick' => new JsExpression('LUOCAPTCHA.reset()')
-            ]);
+//            $captcha .= Html::a(\Yii::t('app','Rest Captcha'),'#',[
+//                'onclick' => new JsExpression('LUOCAPTCHA.reset()')
+//            ]);
+            $this->view->registerJs('LUOCAPTCHA.reset()');
         }
         return $captcha;
     }
