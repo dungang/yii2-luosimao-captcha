@@ -17,7 +17,7 @@ class CaptchaWidget extends InputWidget
     /**
      * @var bool 是否需要重置验证码按钮
      */
-    public $reset = false;
+    public $reset = true;
 
     /**
      * app site key
