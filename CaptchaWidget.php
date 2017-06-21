@@ -10,7 +10,6 @@ namespace dungang\luosimao;
 
 use yii\bootstrap\InputWidget;
 use yii\helpers\Html;
-use yii\web\JsExpression;
 
 class CaptchaWidget extends InputWidget
 {
