@@ -14,10 +14,6 @@ use yii\web\JsExpression;
 
 class CaptchaWidget extends InputWidget
 {
-    /**
-     * @var bool 是否需要重置验证码按钮
-     */
-    public $reset = true;
 
     /**
      * app site key
@@ -37,7 +33,17 @@ class CaptchaWidget extends InputWidget
 
     public function run()
     {
-        CaptchaAsset::register($this->view);
+        //CaptchaAsset::register($this->view);
+
+        $jsCode = "
+            (function(){
+                var c = document.createElement('script');c.type = 'text/javascript';c.async = true;
+                c.src = ('https:' == document.location.protocol ? 'https://' : 'http://') + 'captcha.luosimao.com/static/dist/captcha.js?v=201610101436';
+                var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(c, s);
+            })();
+        ";
+
+        $this->view->registerJs($jsCode);
 
         if (empty($this->siteKey)) {
             if (isset(\Yii::$app->params['luosimao']) &&
@@ -62,12 +68,6 @@ class CaptchaWidget extends InputWidget
         }
         $captcha = $input . Html::tag('div','',$options);
 
-        if ($this->reset) {
-//            $captcha .= Html::a(\Yii::t('app','Rest Captcha'),'#',[
-//                'onclick' => new JsExpression('LUOCAPTCHA.reset()')
-//            ]);
-            $this->view->registerJs('LUOCAPTCHA.reset()');
-        }
         return $captcha;
     }
 }
