@@ -14,9 +14,10 @@ use yii\validators\Validator;
 class CaptchaValidator extends Validator
 {
     public $messages = [
+        '-500'=>'验证码服务器挂了',
         '-10'=>'API KEY 为空',
         '-11'=>'response为空',
-        '-2x'=>'response错误',
+        '-20'=>'response错误',
         '-40'=>'API_KEY使用错误',
     ];
     public function validateAttribute($model, $attribute)
