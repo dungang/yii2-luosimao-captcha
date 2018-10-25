@@ -19,6 +19,7 @@ class CaptchaValidator extends Validator
         '-11'=>'response为空',
         '-20'=>'response错误',
         '-40'=>'API_KEY使用错误',
+        '-23'=>'验证码失效'
     ];
     public function validateAttribute($model, $attribute)
     {
@@ -34,12 +35,14 @@ class CaptchaValidator extends Validator
                     'response'=>$response
                 ]);
                 if ($rst) {
-                    $rst = Json::decode($rst);
+                    $rst = Json::decode($rst,true);
                     if ($rst['res'] == 'success') {
                         return null;
                     } else {
-                        $this->addError($model,$attribute,isset($this->message[$rst['error']])
-                            ?$this->message[$rst['error']]
+                        //修复错误代码别名无法获取的BUG
+                        $errorCode = (string)$rst['error'];
+                        $this->addError($model,$attribute,isset($this->messages[$errorCode])
+                            ?$this->messages[$errorCode]
                             :$rst['msg']);
                     }
                 }
